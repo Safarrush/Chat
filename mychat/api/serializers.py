@@ -1,8 +1,9 @@
 from rest_framework import serializers
+from djoser.serializers import UserCreateSerializer
 from users.models import User
 
 
-class UserRegistrSerializer(serializers.ModelSerializer):
+class UserRegistrSerializer(UserCreateSerializer):
 
     class Meta:
         model = User
@@ -12,4 +13,5 @@ class UserRegistrSerializer(serializers.ModelSerializer):
             'username',
             'first_name',
             'last_name',
+            'password',
         )

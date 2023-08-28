@@ -2,32 +2,9 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 from .validators import validate_username
-from django.contrib.auth.models import AbstractUser, BaseUserManager
+
 
 MAX_LENGTH = 254
-
- 
-class MyUserManager(BaseUserManager):
-    def _create_user(self, email, username, password, **extra_fields):
-        if not email: 
-            raise ValueError("Вы не ввели Email")
-        if not username:
-            raise ValueError("Вы не ввели Логин")
-        user = self.model(
-            email=self.normalize_email(email),
-            username=username,
-            **extra_fields,
-        )
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-    
-    def create_user(self, email, username, password):
-        return self._create_user(email, username, password)
- 
-    def create_superuser(self, email, username, password):
-        return self._create_user(email, username, password, is_staff=True, is_superuser=True)
-
 
 class User(AbstractUser):
     username = models.CharField(
@@ -44,6 +21,8 @@ class User(AbstractUser):
         unique=True,
         help_text='Адрес электронной почты'
     )
+    first_name = models.CharField(max_length=150,)
+    last_name = models.CharField(max_length=150,)
 
     class Meta:
         ordering = ['id']
