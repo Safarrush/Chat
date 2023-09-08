@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -12,6 +13,8 @@ SECRET_KEY = 'django-insecure-2%h9^t%%xtz&q1m=cvgcxc0!!09e8n5rq_8idvicg=*oo-mohn
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+MAX_LENGTH = 240
+TWEET_ACTION_OPTIONS = ['like', 'unlike', 'retweet']
 
 ALLOWED_HOSTS = []
 
@@ -30,7 +33,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'djoser',
     'users',
-    'api'
+    'api',
+    'tweets'
 ]
 
 MIDDLEWARE = [
@@ -49,7 +53,7 @@ ROOT_URLCONF = 'mychat.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -64,9 +68,9 @@ TEMPLATES = [
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
-] 
+]
 
-CORS_URLS_REGEX = r'^/api/.*$' 
+CORS_URLS_REGEX = r'^/api/.*$'
 
 WSGI_APPLICATION = 'mychat.wsgi.application'
 
@@ -117,6 +121,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
+STATIC_ROOT = os.path.join(BASE_DIR, 'static-root')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
