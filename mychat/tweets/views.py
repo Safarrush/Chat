@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from .models import Tweet
-from .serializers import TweetSerializer, TweetActionSerializer, TweetCreateSerializer
+from .serializers import TweetSerializer, TweetActionSerializer, TweetCreateSerializer, TweetAuthorSerializer
 from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -32,3 +32,18 @@ class TweetViewSet(LikedMixin, viewsets.ModelViewSet):
     queryset = Tweet.objects.all()
     serializer_class = TweetSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    @action(
+        detail=False,
+        methods=['get'],
+        permission_classes=[IsAuthenticated],
+        url_path='my'
+    )
+    def get_user_tweets(self, request):
+        user = self.request.user
+        tweets = Tweet.objects.filter(user=user)
+        serializer = self.get_serializer(tweets, many=True)
+        return Response(serializer.data)

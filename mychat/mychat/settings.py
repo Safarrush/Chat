@@ -84,7 +84,9 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
+DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+USE_L10N = False
+USE_TZ = False
 AUTH_USER_MODEL = 'users.User'
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators

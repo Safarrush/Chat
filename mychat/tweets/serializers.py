@@ -23,10 +23,12 @@ class TweetActionSerializer(serializers.ModelSerializer):
 
 class TweetCreateSerializer(serializers.ModelSerializer):
     likes = serializers.SerializerMethodField(read_only=True)
+    user = serializers.StringRelatedField(
+        default=serializers.CurrentUserDefault(), read_only=True)
 
     class Meta:
         model = Tweet
-        fields = ['id', 'content', 'likes']
+        fields = ['id', 'content', 'likes', 'user']
 
     def get_likes(self, obj):
         return obj.likes.count()
@@ -44,7 +46,8 @@ class TweetSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tweet
-        fields = ['id', 'content', 'is_fan', 'total_likes']
+        fields = ['id', 'content', 'is_fan',
+                  'total_likes', 'user', 'timestamp']
 
     # def get_likes(self, obj):
         # return obj.likes.count()
@@ -62,3 +65,10 @@ class FanSerializer(serializers.ModelSerializer):
 
     def get_full_name(self, obj):
         return obj.get_full_name()
+
+
+class TweetAuthorSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = '__all__'

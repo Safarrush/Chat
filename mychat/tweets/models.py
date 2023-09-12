@@ -15,10 +15,12 @@ class TweetLike(models.Model):
 
 
 class Tweet(models.Model):
-    # user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, to_field='username',
+                             on_delete=models.CASCADE, null=True)
     content = models.TextField(blank=True, null=True)
     likes = GenericRelation(TweetLike)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(
+        auto_now_add=True)
     # image = models.FileField(upload_to='images/', blank=True)
 
     class Meta:
