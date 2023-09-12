@@ -7,9 +7,12 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework import filters, status
 from rest_framework.permissions import (SAFE_METHODS, AllowAny,
                                         IsAuthenticated)
+<<<<<<< HEAD
 from rest_framework import viewsets
 from .mixins import LikedMixin
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+=======
+>>>>>>> 75b76978d444b14f962f0675f8f065e0d7d09536
 # Create your views here.
 
 
@@ -81,6 +84,7 @@ def tweet_delete_view(request, tweet_id, *args, **kwargs):
 @api_view(['GET'])
 def tweet_list_view(request, *args, **kwargs):
     queryset = Tweet.objects.all()
+<<<<<<< HEAD
     username = request.GET.get('username')
     if username != None:
         queryset = queryset.filter(user__username__iexact=username)
@@ -92,3 +96,7 @@ class TweetViewSet(LikedMixin, viewsets.ModelViewSet):
     queryset = Tweet.objects.all()
     serializer_class = TweetSerializer
     permission_classes = (IsAuthenticatedOrReadOnly,)
+=======
+    serializer = TweetSerializer(queryset, many=True)
+    return Response(serializer.data)
+>>>>>>> 75b76978d444b14f962f0675f8f065e0d7d09536

@@ -1,8 +1,11 @@
 from rest_framework import serializers
 from django.conf import settings
 from .models import Tweet
+<<<<<<< HEAD
 from . import services as likes_services
 from users.models import User
+=======
+>>>>>>> 75b76978d444b14f962f0675f8f065e0d7d09536
 
 
 MAX_LENGTH = settings.MAX_LENGTH
@@ -38,6 +41,7 @@ class TweetCreateSerializer(serializers.ModelSerializer):
 
 
 class TweetSerializer(serializers.ModelSerializer):
+<<<<<<< HEAD
     # likes = serializers.SerializerMethodField(read_only=True)
     # parent = TweetCreateSerializer(read_only=True)
     is_fan = serializers.SerializerMethodField()
@@ -62,3 +66,14 @@ class FanSerializer(serializers.ModelSerializer):
 
     def get_full_name(self, obj):
         return obj.get_full_name()
+=======
+    likes = serializers.SerializerMethodField(read_only=True)
+    parent = TweetCreateSerializer(read_only=True)
+
+    class Meta:
+        model = Tweet
+        fields = ['id', 'content', 'likes', 'is_retweet', 'parent']
+
+    def get_likes(self, obj):
+        return obj.likes.count()
+>>>>>>> 75b76978d444b14f962f0675f8f065e0d7d09536
