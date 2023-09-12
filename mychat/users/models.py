@@ -25,6 +25,13 @@ class User(AbstractUser):
     )
     first_name = models.CharField(max_length=150,)
     last_name = models.CharField(max_length=150,)
+    bio = models.TextField(
+        blank=True,
+        help_text='Биография'
+    )
+    role = models.TextField(
+        help_text='Роль'
+    )
 
     class Meta:
         ordering = ['id']
@@ -33,9 +40,3 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
-
-
-class Profile(models.Model):
-    user = models.OneToOneField(USER, on_delete=models.CASCADE)
-    loction = models.CharField(max_length=220, blank=True, null=True)
-    bio = models.TextField(blank=True, null=True)

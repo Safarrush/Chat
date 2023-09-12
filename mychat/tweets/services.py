@@ -1,6 +1,7 @@
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from .models import TweetLike as Like
+from .models import Tweet
 
 User = get_user_model()
 
@@ -40,3 +41,9 @@ def get_fans(obj):
     obj_type = ContentType.objects.get_for_model(obj)
     return User.objects.filter(
         likes__content_type=obj_type, likes__object_id=obj.id)
+
+
+def delete(obj, user):
+    obj_type = ContentType.objects.get_for_model(obj)
+    delete, is_created = Tweet.objects.filter(
+        id=obj.id).delete()

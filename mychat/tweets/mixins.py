@@ -24,3 +24,9 @@ class LikedMixin:
         fans = services.get_fans(obj)
         serializer = FanSerializer(fans, many=True)
         return Response(serializer.data)
+
+    @action(detail=True, methods=['DELETE'])
+    def delete(self, request, pk=None):
+        obj = self.get_object()
+        services.delete(obj, request.user)
+        return Response()

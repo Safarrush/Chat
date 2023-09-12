@@ -15,3 +15,26 @@ class UserRegistrSerializer(UserCreateSerializer):
             'last_name',
             'password',
         )
+
+
+class CustomUserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'email',)
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = (
+            'username', 'email', 'first_name',
+            'last_name', 'bio', 'role',
+        )
+        model = User
+
+
+class MeSerializer(ProfileSerializer):
+
+    class Meta(ProfileSerializer.Meta):
+        read_only_fields = ('role',)
