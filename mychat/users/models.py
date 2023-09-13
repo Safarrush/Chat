@@ -32,6 +32,7 @@ class User(AbstractUser):
     role = models.TextField(
         help_text='Роль'
     )
+    friends = models.ManyToManyField('User', blank=True)
 
     class Meta:
         ordering = ['id']
@@ -40,3 +41,20 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+
+class FriendRequest(models.Model):
+    sender = models.ForeignKey(
+        User, related_name='sender', on_delete=models.CASCADE, null=True)
+    recipient = models.ForeignKey(
+        User, related_name='recipient', on_delete=models.CASCADE, null=True
+    )
+    first_name = models.CharField(max_length=30, blank=True)
+    last_name = models.CharField(max_length=30, blank=True)
+
+
+class Friends(models.Model):
+    user_id_1 = models.ForeignKey(
+        User, related_name='user_id_1', on_delete=models.CASCADE, null=True)
+    user_id_2 = models.ForeignKey(
+        User, related_name='user_id_2', on_delete=models.CASCADE, null=True)

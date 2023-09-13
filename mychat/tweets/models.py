@@ -21,6 +21,8 @@ class Tweet(models.Model):
     likes = GenericRelation(TweetLike)
     timestamp = models.DateTimeField(
         auto_now_add=True)
+    user_first_name = models.CharField(max_length=30, blank=True)
+    user_last_name = models.CharField(max_length=30, blank=True)
     # image = models.FileField(upload_to='images/', blank=True)
 
     class Meta:
