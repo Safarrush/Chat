@@ -31,3 +31,23 @@ class Tweet(models.Model):
     @property
     def total_likes(self):
         return self.likes.count()
+
+
+class Comment(models.Model):
+    post = models.ForeignKey(
+        Tweet, related_name='comments', on_delete=models.CASCADE, null=True)
+    author = models.ForeignKey(
+        User,
+        related_name='post_comments',
+        null=True,
+        on_delete=models.SET_NULL,
+    )
+    body = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ('-created_at',)
+
+    def __str__(self):
+        return f'{self.body[:20]} by {self.author.username}'

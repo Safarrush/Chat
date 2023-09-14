@@ -49,7 +49,7 @@ class MeSerializer(ProfileSerializer):
 class FriendsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Friends
-        fields = ('id', 'user_id_1', 'from_username', 'user_id_2',)
+        fields = ('id', 'user_id_1', 'user_id_2',)
 
 
 class FriendRequestSerilizer(serializers.ModelSerializer):
