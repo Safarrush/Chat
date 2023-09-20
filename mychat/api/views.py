@@ -14,6 +14,7 @@ from rest_framework.views import APIView
 from django.utils.decorators import method_decorator
 from django.views.decorators.debug import sensitive_post_parameters
 from django.shortcuts import get_object_or_404
+from rest_framework.exceptions import ValidationError
 
 
 class CustomUserViewSet(UserViewSet):
@@ -45,6 +46,12 @@ class UserViewSet(BaseExcludePutMethodViewSet):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    def list(self, request):
+        # Исключите текущего пользователя из списка всех пользователей
+        queryset = self.queryset.exclude(id=request.user.id)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class UserProfileView(APIView):
 
@@ -54,8 +61,10 @@ class UserProfileView(APIView):
             Q(user_id_1__user_id_2=pk) | Q(user_id_2__user_id_1=pk)
         )
         user_profile = get_object_or_404(User, id=pk).username
-        user_friends_serializer = UserSerializer(user_friends, many=True)
         own_user = self.request.user
+        if user_profile == own_user:
+            return Response(data={"message": "Это ваша страница"}, status=status.HTTP_200_OK)
+        user_friends_serializer = UserSerializer(user_friends, many=True)
         friend_status = "Ничего"
         if user_profile == str(own_user):
             friend_status = "Это ваша страница"
@@ -96,6 +105,9 @@ class RemoveFriendView(APIView):
         pk = kwargs['pk']
         sender = User.objects.get(id=request.user.id).id
         recipient = pk
+        friend_request = FriendRequest.objects.filter(
+            sender_id=recipient, recipient_id=sender
+        ).first()
         remove_entry = Friends.objects.filter(
             (Q(user_id_1=sender) | Q(user_id_1=recipient))
             & (Q(user_id_2=sender) | Q(user_id_1=sender))
@@ -105,6 +117,10 @@ class RemoveFriendView(APIView):
         serializer = FriendRequestSerilizer(data=data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+
+        if friend_request:
+            friend_request.is_pending = False
+            friend_request.delete()
         return Response(status=status.HTTP_200_OK)
 
 
@@ -114,8 +130,21 @@ class SendFriendRequestView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         user = self.request.user
-        serializer.save(sender_id=self.request.user.id,
-                        recipient_id=self.kwargs['pk'], first_name=user.first_name, last_name=user.last_name)
+        recipient_id = self.kwargs['pk']
+        sender = User.objects.get(id=user.id)
+        recipient = User.objects.get(id=recipient_id)
+        if sender == recipient:
+            raise ValidationError({"message": "Это ты"})
+        if Friends.objects.filter(
+            (Q(user_id_1=sender, user_id_2=recipient) |
+             Q(user_id_1=recipient, user_id_2=sender))
+        ).exists():
+            raise ValidationError({"message": "Пользователи уже друзья"})
+        if FriendRequest.objects.filter(sender=user, recipient=recipient, is_pending=True).exists():
+            raise ValidationError({"message": "Заявка уже отправлена"})
+        else:
+            serializer.save(sender_id=self.request.user.id,
+                            recipient_id=self.kwargs['pk'], first_name=user.first_name, last_name=user.last_name, is_pending=True)
 
 
 class IncomingRequestsView(generics.ListAPIView):
@@ -144,10 +173,13 @@ class AcceptFriendRequestView(generics.CreateAPIView):
         friend_request = FriendRequest.objects.filter(
             sender_id=self.kwargs["pk"]
         ).first()
+
+        friend_request.is_pending = False
+        friend_request.save()
         serializer.save(
             user_id_1=friend_request.sender, user_id_2=friend_request.recipient
         )
-        friend_request.delete()
+        # friend_request.delete()
 
 
 class RemoveFriendRequestView(APIView):

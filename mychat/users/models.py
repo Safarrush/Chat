@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericRelation
 
 from .validators import validate_username
 
@@ -33,6 +34,7 @@ class User(AbstractUser):
         help_text='Роль'
     )
     friends = models.ManyToManyField('User', blank=True)
+    is_fan = GenericRelation('FriendRequest')
 
     class Meta:
         ordering = ['id']
@@ -51,6 +53,7 @@ class FriendRequest(models.Model):
     )
     first_name = models.CharField(max_length=30, blank=True)
     last_name = models.CharField(max_length=30, blank=True)
+    is_pending = models.BooleanField(default=False)
 
 
 class Friends(models.Model):
