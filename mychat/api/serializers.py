@@ -52,7 +52,7 @@ class FriendsSerializer(serializers.ModelSerializer):
         fields = ('id', 'user_id_1', 'user_id_2',)
 
 
-class FriendRequestSerilizer(serializers.ModelSerializer):
+class FriendRequestSerializer(serializers.ModelSerializer):
     class Meta:
         model = FriendRequest
         fields = ('id', 'sender', 'recipient',
